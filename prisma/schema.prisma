@@ -15,12 +15,72 @@ datasource db {
 }
 
 model User {
-    id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
     username     String   @unique
     passwordHash String
     role         UserRole @default(USER)
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @default(now()) @updatedAt
+
+    test Test[]
+}
+
+model Test {
+    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    name     String  @unique
+    isActive Boolean @default(false)
+
+    creatorId String @db.Uuid
+    creator   User   @relation(fields: [creatorId], references: [id])
+
+    version Version[]
+}
+
+model Version {
+    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    label               String
+    numberOfImpressions BigInt @default(0)
+    numberOfClicks      BigInt @default(0)
+
+    testId String @db.Uuid
+    test   Test   @relation(fields: [testId], references: [id])
+
+    style Style[]
+
+    @@unique([testId, label])
+}
+
+model Component {
+    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    domId String @unique
+
+    style Style[]
+}
+
+model Style {
+    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    className String
+
+    componentId String    @db.Uuid
+    component   Component @relation(fields: [componentId], references: [id])
+
+    versionId String  @db.Uuid
+    version   Version @relation(fields: [versionId], references: [id])
+
+    @@unique([componentId, versionId])
 }
 
 enum UserRole {
