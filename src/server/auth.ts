@@ -5,9 +5,10 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { compare } from "bcrypt";
 
-import { env } from "~/env";
+import { type UserRole } from "@prisma/client";
 import { db } from "~/server/db";
 
 /**
@@ -21,14 +22,14 @@ declare module "next-auth" {
     user: DefaultSession["user"] & {
       id: string;
       // ...other properties
-      // role: UserRole;
+      role: UserRole;
     };
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    role: UserRole;
+  }
 }
 
 /**
@@ -37,21 +38,28 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
+        id: token.id,
+        role: token.role,
       },
     }),
   },
   adapter: PrismaAdapter(db),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
     /**
      * ...add more providers here.
      *
@@ -61,6 +69,44 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        // Add logic here to look up the user from the credentials supplied
+        // You can also use the `req` object to access additional parameters
+        // return { id: 1, name: "J Smith", email: "jsmith@example" };
+
+        if (!credentials) throw new Error("AccessDenied");
+
+        const { username, password } = credentials;
+
+        const user = await db.user.findUnique({
+          where: {
+            username,
+          },
+          select: {
+            id: true,
+            role: true,
+            passwordHash: true,
+          },
+        });
+
+        if (!user) throw new Error("AccessDenied");
+
+        const passwordMatch = await compare(password, user.passwordHash);
+
+        if (!passwordMatch) throw new Error("AccessDenied");
+
+        return {
+          id: user.id,
+          role: user.role,
+        };
+      },
+    }),
   ],
 };
 
