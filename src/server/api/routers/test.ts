@@ -39,14 +39,14 @@ export const testRouter = createTRPCRouter({
   getComponentStyles: publicProcedure
     .input(
       z.object({
-        componentDomId: z.string().nullable(),
+        componentDomId: z.string(),
         versionId: z.string().uuid().nullable(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const { componentDomId, versionId } = input;
 
-      if (!componentDomId || !versionId) return null;
+      if (!versionId) return null;
 
       const component = await ctx.db.component.findUnique({
         where: {

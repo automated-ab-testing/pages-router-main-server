@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { type Button } from "@nextui-org/react";
 
 import { api } from "~/utils/api";
@@ -6,23 +5,21 @@ import useTestContext from "~/hooks/useTestContext";
 
 // TODO: Generalize the wrapper for button component into all components.
 export default function ButtonWrapper({
+  domId,
   render,
 }: {
+  domId: string;
   render: (props: {
-    ref: React.RefObject<HTMLButtonElement>;
     className: string | undefined;
     onClick: () => void;
   }) => React.ReactElement<typeof Button>;
 }) {
-  // Get child button ref.
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
   // For rendering the version.
   const versionId = useTestContext((state) => state.versionId);
 
   const { data } = api.test.getComponentStyles.useQuery(
     {
-      componentDomId: buttonRef.current ? buttonRef.current.id : null,
+      componentDomId: domId,
       versionId: versionId,
     },
     {
@@ -49,7 +46,6 @@ export default function ButtonWrapper({
   if (!versionId) return null;
 
   return render({
-    ref: buttonRef,
     className,
     onClick: () => {
       if (!className || hasClickRecorded) return;
