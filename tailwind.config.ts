@@ -11,4 +11,6 @@ export default {
   },
   darkMode: "class",
   plugins: [nextui()],
+  // NOTE: Jangan lupa safelist ditambahkan sesuai dengan style yang digunakan
+  safelist: [],
 } satisfies Config;

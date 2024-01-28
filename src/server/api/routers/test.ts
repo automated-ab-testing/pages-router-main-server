@@ -14,7 +14,7 @@ export const testRouter = createTRPCRouter({
       },
     });
 
-    // TODO: Distribusi peluang dapat diubah berdasarkan jumlah pengujian
+    // NOTE: Distribusi peluang dapat diubah berdasarkan jumlah pengujian
     const randomTest = sample(activeTests);
 
     if (!randomTest) return null;
@@ -28,7 +28,7 @@ export const testRouter = createTRPCRouter({
       },
     });
 
-    // TODO: Distribusi peluang dapat diubah dengan menggunakan HMM
+    // NOTE: Distribusi peluang dapat diubah dengan menggunakan HMM
     const randomVersion = sample(versions);
 
     if (!randomVersion) return null;
