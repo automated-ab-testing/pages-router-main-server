@@ -9,12 +9,14 @@ const AppNavbar = dynamic(() => import("~/components/AppNavbar"), {
   ssr: false,
 });
 
-interface Props {
+interface LayoutProps {
   title: string;
-  children?: React.ReactNode;
 }
 
-export default function Layout({ title, children }: Props) {
+export default function Layout({
+  title,
+  children,
+}: React.PropsWithChildren<LayoutProps>) {
   return (
     <>
       <Head>

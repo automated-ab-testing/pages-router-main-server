@@ -13,6 +13,8 @@ export const testRouter = createTRPCRouter({
         id: true,
       },
     });
+
+    // TODO: Distribusi peluang dapat diubah berdasarkan jumlah pengujian
     const randomTest = sample(activeTests);
 
     if (!randomTest) return null;
@@ -25,24 +27,26 @@ export const testRouter = createTRPCRouter({
         id: true,
       },
     });
+
+    // TODO: Distribusi peluang dapat diubah dengan menggunakan HMM
     const randomVersion = sample(versions);
 
     if (!randomVersion) return null;
 
-    return {
-      versionId: randomVersion.id,
-    };
+    return randomVersion;
   }),
 
   getComponentStyles: publicProcedure
     .input(
       z.object({
-        versionId: z.string().uuid(),
         componentDomId: z.string(),
+        versionId: z.string().uuid().nullable(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const { componentDomId, versionId } = input;
+
+      if (!versionId) return null;
 
       const component = await ctx.db.component.findUnique({
         where: {
@@ -69,8 +73,6 @@ export const testRouter = createTRPCRouter({
 
       if (!style) return null;
 
-      return {
-        className: style.className,
-      };
+      return style;
     }),
 });
