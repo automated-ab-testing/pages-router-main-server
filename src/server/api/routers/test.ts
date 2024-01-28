@@ -30,7 +30,6 @@ export const testRouter = createTRPCRouter({
     if (!randomVersion) return null;
 
     return {
-      testId: randomTest.id,
       versionId: randomVersion.id,
     };
   }),
@@ -38,8 +37,8 @@ export const testRouter = createTRPCRouter({
   getComponentStyles: publicProcedure
     .input(
       z.object({
-        componentDomId: z.string(),
         versionId: z.string().uuid(),
+        componentDomId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
