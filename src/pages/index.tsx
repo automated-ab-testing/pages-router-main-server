@@ -1,8 +1,8 @@
 import Layout from "~/layout";
+import PageWrapper from "~/wrappers/PageWrapper";
 import Version from "~/components/Version";
 import FirstButton from "~/components/FirstButton";
 import SecondButton from "~/components/SecondButton";
-import PageWrapper from "~/wrappers/PageWrapper";
 
 export default function Home() {
   return (
