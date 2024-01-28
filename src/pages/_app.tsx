@@ -4,6 +4,7 @@ import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { type AppType } from "next/app";
 
+import TestProvider from "~/providers/TestProvider";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
@@ -16,7 +17,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <NextUIProvider>
         <NextThemesProvider attribute="class" defaultTheme="dark">
-          <Component {...pageProps} />
+          <TestProvider>
+            <Component {...pageProps} />
+          </TestProvider>
         </NextThemesProvider>
       </NextUIProvider>
     </SessionProvider>

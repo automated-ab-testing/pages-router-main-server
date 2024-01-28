@@ -1,11 +1,11 @@
 import { Button } from "@nextui-org/react";
 
 import { api } from "~/utils/api";
-import useStore from "~/hooks/store";
+import useTestContext from "~/hooks/useTestContext";
 
 export default function SecondButton() {
   // For rendering the version.
-  const versionId = useStore((state) => state.versionId);
+  const versionId = useTestContext((state) => state.versionId);
 
   const { data } = api.test.getComponentStyles.useQuery(
     {
@@ -22,8 +22,8 @@ export default function SecondButton() {
   const className = data?.className;
 
   // For incrementing the click count.
-  const hasClickRecorded = useStore((state) => state.hasClickRecorded);
-  const confirmClick = useStore((state) => state.confirmClick);
+  const hasClickRecorded = useTestContext((state) => state.hasClickRecorded);
+  const confirmClick = useTestContext((state) => state.confirmClick);
 
   const incrementClicks = api.test.incrementClicks.useMutation({
     onSuccess: () => {

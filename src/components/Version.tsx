@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 
 import { api } from "~/utils/api";
-import useStore from "~/hooks/store";
+import useTestContext from "~/hooks/useTestContext";
 
 export default function Version() {
   // For rendering the version.
-  const setVersionId = useStore((state) => state.setVersionId);
+  const setVersionId = useTestContext((state) => state.setVersionId);
 
   const { data } = api.test.getVersion.useQuery(undefined, {
     refetchOnMount: false,
@@ -16,10 +16,10 @@ export default function Version() {
   const versionId = data?.id;
 
   // For incrementing the impression count.
-  const hasImpressionRecorded = useStore(
+  const hasImpressionRecorded = useTestContext(
     (state) => state.hasImpressionRecorded,
   );
-  const confirmImpression = useStore((state) => state.confirmImpression);
+  const confirmImpression = useTestContext((state) => state.confirmImpression);
 
   const incrementImpressionMutation = api.test.incrementImpressions.useMutation(
     {
