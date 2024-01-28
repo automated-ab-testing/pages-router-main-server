@@ -46,6 +46,7 @@ export const testRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { componentDomId, versionId } = input;
 
+      // Note: versionId bersifat nullable karena fungsi "getComponentStyles" mungkin dipanggil sebelum versi diambil
       if (!versionId) return null;
 
       const component = await ctx.db.component.findUnique({
@@ -74,5 +75,53 @@ export const testRouter = createTRPCRouter({
       if (!style) return null;
 
       return style;
+    }),
+
+  incrementImpressions: publicProcedure
+    .input(
+      z.object({
+        versionId: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { versionId } = input;
+
+      return await ctx.db.version.update({
+        where: {
+          id: versionId,
+        },
+        data: {
+          numberOfImpressions: {
+            increment: 1,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+    }),
+
+  incrementClicks: publicProcedure
+    .input(
+      z.object({
+        versionId: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { versionId } = input;
+
+      return await ctx.db.version.update({
+        where: {
+          id: versionId,
+        },
+        data: {
+          numberOfClicks: {
+            increment: 1,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
     }),
 });

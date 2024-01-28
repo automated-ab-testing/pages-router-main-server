@@ -4,6 +4,7 @@ import { api } from "~/utils/api";
 import useStore from "~/hooks/store";
 
 export default function FirstButton() {
+  // For rendering the version.
   const versionId = useStore((state) => state.versionId);
 
   const { data } = api.test.getComponentStyles.useQuery(
@@ -20,8 +21,32 @@ export default function FirstButton() {
   );
   const className = data?.className;
 
+  // For incrementing the click count.
+  const hasClickRecorded = useStore((state) => state.hasClickRecorded);
+  const confirmClick = useStore((state) => state.confirmClick);
+
+  const incrementClicks = api.test.incrementClicks.useMutation({
+    onSuccess: () => {
+      // Confirm that the click has been recorded.
+      confirmClick();
+    },
+  });
+
+  // Render the component.
+  if (!versionId) return null;
+
   return (
-    <Button id="first-button" className={className}>
+    <Button
+      id="first-button"
+      className={className}
+      onClick={() => {
+        if (!className || hasClickRecorded) return;
+
+        incrementClicks.mutate({
+          versionId,
+        });
+      }}
+    >
       First Button
     </Button>
   );

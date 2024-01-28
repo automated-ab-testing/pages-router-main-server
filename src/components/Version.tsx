@@ -5,6 +5,9 @@ import { api } from "~/utils/api";
 import useStore from "~/hooks/store";
 
 export default function Version() {
+  // For rendering the version.
+  const setVersionId = useStore((state) => state.setVersionId);
+
   const { data } = api.test.getVersion.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -12,15 +15,35 @@ export default function Version() {
   });
   const versionId = data?.id;
 
-  const setVersionId = useStore((state) => state.setVersionId);
+  // For incrementing the impression count.
+  const hasImpressionRecorded = useStore(
+    (state) => state.hasImpressionRecorded,
+  );
+  const confirmImpression = useStore((state) => state.confirmImpression);
 
+  const incrementImpressionMutation = api.test.incrementImpressions.useMutation(
+    {
+      onSuccess: (data) => {
+        // Confirm that the impression has been recorded.
+        confirmImpression();
+
+        // Set the version ID in the store.
+        setVersionId(data.id);
+      },
+    },
+  );
+  const incrementImpression = incrementImpressionMutation.mutate;
+
+  // Increment the impression count after the version ID has been set.
   useEffect(() => {
-    if (!versionId) return;
+    if (!versionId || hasImpressionRecorded) return;
 
-    setVersionId(versionId);
-  }, [versionId, setVersionId]);
+    // Increment the impression count for this version.
+    incrementImpression({ versionId });
+  }, [versionId, hasImpressionRecorded, incrementImpression]);
 
-  if (!versionId) return;
+  // Render the component.
+  if (!versionId) return null;
 
   return (
     <Card>
