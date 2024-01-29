@@ -1,10 +1,7 @@
-import { type Button } from "@nextui-org/react";
-
 import { api } from "~/utils/api";
 import useTestContext from "~/hooks/useTestContext";
 
-// TODO: Generalize the wrapper for button component into all components.
-export default function ButtonWrapper({
+export default function ClickableWrapper({
   domId,
   render,
 }: {
@@ -12,7 +9,7 @@ export default function ButtonWrapper({
   render: (props: {
     className: string | undefined;
     onClick: () => void;
-  }) => React.ReactElement<typeof Button>;
+  }) => React.ReactElement;
 }) {
   // For rendering the version.
   const versionId = useTestContext((state) => state.versionId);
@@ -42,13 +39,10 @@ export default function ButtonWrapper({
     },
   });
 
-  // Render the component.
-  if (!versionId) return null;
-
   return render({
     className,
     onClick: () => {
-      if (!className || hasClickRecorded) return;
+      if (!versionId || !className || hasClickRecorded) return;
 
       incrementClicks.mutate({
         versionId,

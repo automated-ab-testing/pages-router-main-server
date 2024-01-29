@@ -2,7 +2,7 @@ import { Button, Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 
 import Layout from "~/layout";
 import PageWrapper from "~/wrappers/PageWrapper";
-import ButtonWrapper from "~/wrappers/ButtonWrapper";
+import ClickableWrapper from "~/wrappers/ClickableWrapper";
 import useTestContext from "~/hooks/useTestContext";
 
 export default function Home() {
@@ -24,11 +24,11 @@ export default function Home() {
 
         {/* A/B Testing Component */}
         <PageWrapper>
-          <ButtonWrapper
+          <ClickableWrapper
             domId="first-button"
             render={(props) => <Button {...props}>First Button</Button>}
           />
-          <ButtonWrapper
+          <ClickableWrapper
             domId="second-button"
             render={(props) => <Button {...props}>Second Button</Button>}
           />
