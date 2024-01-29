@@ -3,18 +3,9 @@ import { useEffect } from "react";
 import { api } from "~/utils/api";
 import useTestContext from "~/hooks/useTestContext";
 
-export default function PageWrapper({ children }: React.PropsWithChildren) {
-  // For rendering the version.
-  const setVersionId = useTestContext((state) => state.setVersionId);
-
-  const { data } = api.test.getVersion.useQuery(undefined, {
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-  const versionId = data?.id;
-
+export default function DisplayWrapper({ children }: React.PropsWithChildren) {
   // For incrementing the impression count.
+  const versionId = useTestContext((state) => state.versionId);
   const hasImpressionRecorded = useTestContext(
     (state) => state.hasImpressionRecorded,
   );
@@ -22,12 +13,9 @@ export default function PageWrapper({ children }: React.PropsWithChildren) {
 
   const incrementImpressionMutation = api.test.incrementImpressions.useMutation(
     {
-      onSuccess: (data) => {
+      onSuccess: () => {
         // Confirm that the impression has been recorded.
         confirmImpression();
-
-        // Set the version ID in the store.
-        setVersionId(data.id);
       },
     },
   );

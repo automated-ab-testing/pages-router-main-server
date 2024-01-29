@@ -85,7 +85,7 @@ export const testRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { versionId } = input;
 
-      return await ctx.db.version.update({
+      await ctx.db.version.update({
         where: {
           id: versionId,
         },
@@ -109,7 +109,7 @@ export const testRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { versionId } = input;
 
-      return await ctx.db.version.update({
+      await ctx.db.version.update({
         where: {
           id: versionId,
         },

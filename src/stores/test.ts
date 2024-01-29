@@ -12,8 +12,6 @@ export interface TestAction {
   confirmClick: () => void;
 }
 
-export type TestStore = ReturnType<typeof createTestStore>;
-
 export function createTestStore() {
   return createStore<TestState & TestAction>()((set) => ({
     versionId: null,
@@ -24,3 +22,5 @@ export function createTestStore() {
     confirmClick: () => set({ hasClickRecorded: true }),
   }));
 }
+
+export type TestStore = ReturnType<typeof createTestStore>;

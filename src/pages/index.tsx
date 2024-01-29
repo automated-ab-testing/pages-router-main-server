@@ -1,15 +1,10 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-  Link,
-} from "@nextui-org/react";
+import { Button, Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 
 import Layout from "~/layout";
-import PageWrapper from "~/wrappers/PageWrapper";
+import DisplayWrapper from "~/wrappers/DisplayWrapper";
 import ClickableWrapper from "~/wrappers/ClickableWrapper";
+import StylingWrapper from "~/wrappers/StylingWrapper";
+import VersionScript from "~/components/VersionScript";
 import useTestContext from "~/hooks/useTestContext";
 
 export default function Home() {
@@ -29,43 +24,36 @@ export default function Home() {
           </CardBody>
         </Card>
 
+        {/* A/B Testing Script */}
+        <VersionScript />
+
         {/* A/B Testing Component */}
-        <PageWrapper>
+        <DisplayWrapper>
           <ClickableWrapper
-            domId="first-button"
-            render={(props) => <Button {...props}>First Button</Button>}
-          />
-          <ClickableWrapper
-            domId="second-button"
-            render={(props) => <Button {...props}>Second Button</Button>}
-          />
-          <ClickableWrapper
-            domId="first-link"
-            render={(props) => (
-              <Link
-                isExternal
-                href="https://github.com/rayhankinan"
-                showAnchorIcon
-                {...props}
-              >
-                First Link
-              </Link>
+            render={(propsClickable) => (
+              <StylingWrapper
+                domId="first-button"
+                render={(propsStyling) => (
+                  <Button {...propsClickable} {...propsStyling}>
+                    First Button
+                  </Button>
+                )}
+              />
             )}
           />
           <ClickableWrapper
-            domId="second-link"
-            render={(props) => (
-              <Link
-                isExternal
-                href="https://github.com/andreanaa"
-                showAnchorIcon
-                {...props}
-              >
-                Second Link
-              </Link>
+            render={(propsClickable) => (
+              <StylingWrapper
+                domId="second-button"
+                render={(propsStyling) => (
+                  <Button {...propsClickable} {...propsStyling}>
+                    Second Button
+                  </Button>
+                )}
+              />
             )}
           />
-        </PageWrapper>
+        </DisplayWrapper>
       </div>
     </Layout>
   );

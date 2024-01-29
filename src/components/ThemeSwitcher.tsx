@@ -7,7 +7,7 @@ import MoonIcon from "~/svg/MoonIcon";
 export default function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
 
-  if (!theme) return;
+  if (!theme) return null;
 
   return (
     <Switch
