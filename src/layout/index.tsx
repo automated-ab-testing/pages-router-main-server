@@ -3,8 +3,6 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { env } from "~/env";
-
 const AppNavbar = dynamic(() => import("~/components/AppNavbar"), {
   ssr: false,
 });
@@ -35,7 +33,7 @@ export default function Layout({
           {children}
         </motion.div>
       </main>
-      {env.NEXT_PUBLIC_NODE_ENV !== "production" && (
+      {process.env.NODE_ENV !== "production" && (
         <footer className="hidden md:block">
           <ReactQueryDevtools initialIsOpen={false} />
         </footer>

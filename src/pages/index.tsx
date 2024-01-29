@@ -1,4 +1,11 @@
-import { Button, Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Divider,
+  Link,
+} from "@nextui-org/react";
 
 import Layout from "~/layout";
 import PageWrapper from "~/wrappers/PageWrapper";
@@ -31,6 +38,32 @@ export default function Home() {
           <ClickableWrapper
             domId="second-button"
             render={(props) => <Button {...props}>Second Button</Button>}
+          />
+          <ClickableWrapper
+            domId="first-link"
+            render={(props) => (
+              <Link
+                isExternal
+                href="https://github.com/rayhankinan"
+                showAnchorIcon
+                {...props}
+              >
+                First Link
+              </Link>
+            )}
+          />
+          <ClickableWrapper
+            domId="second-link"
+            render={(props) => (
+              <Link
+                isExternal
+                href="https://github.com/andreanaa"
+                showAnchorIcon
+                {...props}
+              >
+                Second Link
+              </Link>
+            )}
           />
         </PageWrapper>
       </div>
