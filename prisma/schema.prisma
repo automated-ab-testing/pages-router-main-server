@@ -72,7 +72,7 @@ model Style {
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
-    className String
+    className String @db.Text
 
     componentId String    @db.Uuid
     component   Component @relation(fields: [componentId], references: [id])
