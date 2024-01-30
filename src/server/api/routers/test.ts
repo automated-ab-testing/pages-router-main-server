@@ -14,10 +14,12 @@ export const testRouter = createTRPCRouter({
       },
     });
 
-    // NOTE: Distribusi peluang dapat diubah berdasarkan jumlah pengujian
     const randomTest = sample(activeTests);
 
-    if (!randomTest) return null;
+    if (!randomTest)
+      return {
+        id: null,
+      };
 
     const versions = await ctx.db.version.findMany({
       where: {
@@ -31,7 +33,10 @@ export const testRouter = createTRPCRouter({
     // NOTE: Distribusi peluang dapat diubah dengan menggunakan HMM
     const randomVersion = sample(versions);
 
-    if (!randomVersion) return null;
+    if (!randomVersion)
+      return {
+        id: null,
+      };
 
     return randomVersion;
   }),
@@ -46,7 +51,10 @@ export const testRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { componentDomId, versionId } = input;
 
-      if (!versionId) return null;
+      if (!versionId)
+        return {
+          className: null,
+        };
 
       const component = await ctx.db.component.findUnique({
         where: {
@@ -57,7 +65,10 @@ export const testRouter = createTRPCRouter({
         },
       });
 
-      if (!component) return null;
+      if (!component)
+        return {
+          className: null,
+        };
 
       const style = await ctx.db.style.findUnique({
         where: {
@@ -71,7 +82,10 @@ export const testRouter = createTRPCRouter({
         },
       });
 
-      if (!style) return null;
+      if (!style)
+        return {
+          className: null,
+        };
 
       return style;
     }),

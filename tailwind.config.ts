@@ -11,6 +11,6 @@ export default {
   },
   darkMode: "class",
   plugins: [nextui()],
-  // NOTE: Jangan lupa safelist ditambahkan sesuai dengan style yang digunakan
-  safelist: ["bg-purple-500", "bg-red-500", "text-red-500", "text-purple-500"],
+  // NOTE: Jangan lupa safelist ditambahkan sesuai dengan style yang terdapat di database
+  safelist: ["bg-purple-500", "bg-red-500"],
 } satisfies Config;

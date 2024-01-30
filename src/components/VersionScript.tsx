@@ -4,9 +4,10 @@ import { api } from "~/utils/api";
 import useTestContext from "~/hooks/useTestContext";
 
 export default function VersionScript() {
-  // For setting the version ID.
+  // Get the function for setting the version ID from the context.
   const setVersionId = useTestContext((state) => state.setVersionId);
 
+  // Get the version ID from query.
   const { data } = api.test.getVersion.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -14,10 +15,11 @@ export default function VersionScript() {
   });
   const versionId = data?.id;
 
-  // Set the version ID after the API call has been made.
   useEffect(() => {
-    if (!versionId) return;
+    // If the version ID has not been fetched, then do nothing.
+    if (versionId === undefined) return;
 
+    // Set the version ID.
     setVersionId(versionId);
   }, [versionId, setVersionId]);
 

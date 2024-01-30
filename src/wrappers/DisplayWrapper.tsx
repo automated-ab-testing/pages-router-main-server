@@ -4,13 +4,14 @@ import { api } from "~/utils/api";
 import useTestContext from "~/hooks/useTestContext";
 
 export default function DisplayWrapper({ children }: React.PropsWithChildren) {
-  // For incrementing the impression count.
+  // Get the version ID and impression status from the context.
   const versionId = useTestContext((state) => state.versionId);
   const hasImpressionRecorded = useTestContext(
     (state) => state.hasImpressionRecorded,
   );
   const confirmImpression = useTestContext((state) => state.confirmImpression);
 
+  // Get the mutation for incrementing the impression count.
   const incrementImpressionMutation = api.test.incrementImpressions.useMutation(
     {
       onSuccess: () => {

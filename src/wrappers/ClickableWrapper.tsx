@@ -13,18 +13,19 @@ export default function ClickableWrapper({
   const hasClickRecorded = useTestContext((state) => state.hasClickRecorded);
   const confirmClick = useTestContext((state) => state.confirmClick);
 
-  const incrementClicks = api.test.incrementClicks.useMutation({
+  const incrementClicksMutation = api.test.incrementClicks.useMutation({
     onSuccess: () => {
       // Confirm that the click has been recorded.
       confirmClick();
     },
   });
+  const incrementClicks = incrementClicksMutation.mutate;
 
   return render({
     onClick: () => {
       if (!versionId || hasClickRecorded) return;
 
-      incrementClicks.mutate({
+      incrementClicks({
         versionId,
       });
     },

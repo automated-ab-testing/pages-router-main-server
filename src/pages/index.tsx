@@ -19,9 +19,15 @@ export default function Home() {
             <p className="text-md">Version ID</p>
           </CardHeader>
           <Divider />
-          <CardBody>
-            <p>{versionId}</p>
-          </CardBody>
+          {versionId === null ? (
+            <CardBody>
+              <p>There is no active test!</p>
+            </CardBody>
+          ) : (
+            <CardBody>
+              <p>{versionId}</p>
+            </CardBody>
+          )}
         </Card>
 
         {/* A/B Testing Script */}
@@ -32,7 +38,8 @@ export default function Home() {
           <ClickableWrapper
             render={(propsClickable) => (
               <StylingWrapper
-                domId="first-button"
+                componentDomId="first-button"
+                fallbackClassName="bg-green-500"
                 render={(propsStyling) => (
                   <Button {...propsClickable} {...propsStyling}>
                     First Button
@@ -44,7 +51,8 @@ export default function Home() {
           <ClickableWrapper
             render={(propsClickable) => (
               <StylingWrapper
-                domId="second-button"
+                componentDomId="second-button"
+                fallbackClassName="bg-green-500"
                 render={(propsStyling) => (
                   <Button {...propsClickable} {...propsStyling}>
                     Second Button
