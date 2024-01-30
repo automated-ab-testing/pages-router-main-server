@@ -34,14 +34,13 @@ export default function StylingWrapper({
       className: defaultClassName,
     });
 
-  // If there is no active style in the test, then hide the component.
-  if (className === null)
+  // If the component style has not been fetched
+  // or there is no active style in the test,
+  // then hide the component.
+  if (className === undefined || className === null)
     return render({
       className: "hidden",
     });
-
-  // If the component style has not been fetched, then render nothing.
-  if (className === undefined) return null;
 
   // Render the component with the class name.
   return render({
