@@ -40,8 +40,10 @@ export default function StylingWrapper({
       className: "hidden",
     });
 
+  // If the component style has not been fetched, then render nothing.
+  if (className === undefined) return null;
+
   // Render the component with the class name.
-  // If the component style has not been fetched, then render the component without the class name.
   return render({
     className,
   });
