@@ -3,11 +3,11 @@ import useTestContext from "~/hooks/useTestContext";
 
 export default function StylingWrapper({
   componentDomId,
-  fallbackClassName,
+  defaultClassName,
   render,
 }: {
   componentDomId: string;
-  fallbackClassName?: string;
+  defaultClassName?: string;
   render: (props: { className: string | undefined }) => React.ReactElement;
 }) {
   // Get the version ID from the context.
@@ -31,7 +31,7 @@ export default function StylingWrapper({
   // If there is no active test, then render the fallback class name.
   if (!versionId)
     return render({
-      className: fallbackClassName,
+      className: defaultClassName,
     });
 
   // If there is no active style in the test, then hide the component.

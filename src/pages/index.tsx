@@ -35,11 +35,13 @@ export default function Home() {
 
         {/* A/B Testing Component */}
         <DisplayWrapper>
+          {/* First Button Component */}
           <ClickableWrapper
+            defaultOnClick={() => console.log("First Button Clicked!")}
             render={(propsClickable) => (
               <StylingWrapper
                 componentDomId="first-button"
-                fallbackClassName="bg-green-500"
+                defaultClassName="hidden"
                 render={(propsStyling) => (
                   <Button {...propsClickable} {...propsStyling}>
                     First Button
@@ -48,17 +50,34 @@ export default function Home() {
               />
             )}
           />
+
+          {/* Second Button Component */}
           <ClickableWrapper
+            defaultOnClick={() => console.log("Second Button Clicked!")}
             render={(propsClickable) => (
               <StylingWrapper
                 componentDomId="second-button"
-                fallbackClassName="bg-green-500"
+                defaultClassName="hidden"
                 render={(propsStyling) => (
                   <Button {...propsClickable} {...propsStyling}>
                     Second Button
                   </Button>
                 )}
               />
+            )}
+          />
+
+          {/* Default Button Component */}
+          <StylingWrapper
+            componentDomId="default-button"
+            defaultClassName="bg-green-500"
+            render={(props) => (
+              <Button
+                onClick={() => console.log("Default Button Clicked!")}
+                {...props}
+              >
+                Default Button
+              </Button>
             )}
           />
         </DisplayWrapper>

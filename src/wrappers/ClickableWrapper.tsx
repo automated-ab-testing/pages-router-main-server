@@ -2,9 +2,13 @@ import { api } from "~/utils/api";
 import useTestContext from "~/hooks/useTestContext";
 
 export default function ClickableWrapper({
+  defaultOnClick,
   render,
 }: {
-  render: (props: { onClick: () => void }) => React.ReactElement;
+  defaultOnClick?: React.MouseEventHandler;
+  render: (props: {
+    onClick: React.MouseEventHandler | undefined;
+  }) => React.ReactElement;
 }) {
   // For rendering the version.
   const versionId = useTestContext((state) => state.versionId);
@@ -21,13 +25,20 @@ export default function ClickableWrapper({
   });
   const incrementClicks = incrementClicksMutation.mutate;
 
-  return render({
-    onClick: () => {
-      if (!versionId || hasClickRecorded) return;
+  // If there is no active test, then render the default onClick.
+  if (!versionId) return render({ onClick: defaultOnClick });
 
-      incrementClicks({
-        versionId,
-      });
+  // Render the component with the onClick.
+  return render({
+    onClick: (event) => {
+      // Call the default onClick.
+      if (defaultOnClick) defaultOnClick(event);
+
+      // If the click has not been recorded, then increment the click count.
+      if (!hasClickRecorded)
+        incrementClicks({
+          versionId,
+        });
     },
   });
 }

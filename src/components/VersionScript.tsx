@@ -16,11 +16,8 @@ export default function VersionScript() {
   const versionId = data?.id;
 
   useEffect(() => {
-    // If the version ID has not been fetched, then do nothing.
-    if (versionId === undefined) return;
-
-    // Set the version ID.
-    setVersionId(versionId);
+    // If the version ID has been fetched, then set the version ID.
+    if (versionId !== undefined) setVersionId(versionId);
   }, [versionId, setVersionId]);
 
   return null;

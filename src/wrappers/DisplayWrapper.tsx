@@ -24,10 +24,8 @@ export default function DisplayWrapper({ children }: React.PropsWithChildren) {
 
   // Increment the impression count after the version ID has been set.
   useEffect(() => {
-    if (!versionId || hasImpressionRecorded) return;
-
-    // Increment the impression count for this version.
-    incrementImpression({ versionId });
+    // If the version ID has been set and the impression has not been recorded, then increment the impression count.
+    if (versionId && !hasImpressionRecorded) incrementImpression({ versionId });
   }, [versionId, hasImpressionRecorded, incrementImpression]);
 
   return <>{children}</>;
