@@ -108,9 +108,6 @@ export const testRouter = createTRPCRouter({
             increment: 1,
           },
         },
-        select: {
-          id: true,
-        },
       });
     }),
 
@@ -131,9 +128,6 @@ export const testRouter = createTRPCRouter({
           numberOfClicks: {
             increment: 1,
           },
-        },
-        select: {
-          id: true,
         },
       });
     }),

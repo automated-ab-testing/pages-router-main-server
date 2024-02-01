@@ -24,15 +24,13 @@ export default function Layout({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <AppNavbar />
-      <main>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {children}
-        </motion.div>
-      </main>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {children}
+      </motion.div>
       {process.env.NODE_ENV !== "production" && (
         <footer className="hidden md:block">
           <ReactQueryDevtools initialIsOpen={false} />
