@@ -4,10 +4,12 @@ import { api } from "~/utils/api";
 
 export default function ComponentWrapper({
   versionId,
+  styles,
   renderDefault,
   renderTest,
 }: {
   versionId: string | null | undefined;
+  styles: Record<string, string> | undefined;
   renderDefault: () => React.ReactElement;
   renderTest: (props: {
     getStyles: (domId: string) => string | undefined;
@@ -16,18 +18,6 @@ export default function ComponentWrapper({
 }) {
   // Define the component state.
   const [hasClickRecorded, setClickRecorded] = useState(false);
-
-  // Get the component styles from query.
-  const { data } = api.test.getComponentStyles.useQuery(
-    { versionId },
-    {
-      enabled: versionId !== undefined && versionId !== null,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    },
-  );
-  const styles = data?.styles;
 
   // Get the mutation for incrementing the click count.
   const incrementClicksMutation = api.test.incrementClicks.useMutation({

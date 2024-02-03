@@ -11,14 +11,16 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center gap-8 py-2">
         {/* A/B Testing Experiment */}
         <ExperimentWrapper
-          render={({ versionId }) => (
+          render={({ versionId, styles }) => (
             <>
               {/* Display Version ID */}
               <DisplayVersion versionId={versionId} />
 
               {/* A/B Testing Component */}
+              {/* TODO: Pass the version and styles using context */}
               <ComponentWrapper
                 versionId={versionId}
+                styles={styles}
                 renderDefault={() => (
                   <Button className="bg-green-500">Default Button</Button>
                 )}

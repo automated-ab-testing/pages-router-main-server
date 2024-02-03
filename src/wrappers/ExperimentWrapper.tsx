@@ -8,18 +8,20 @@ export default function ExperimentWrapper({
 }: {
   render: (props: {
     versionId: string | null | undefined;
+    styles: Record<string, string> | undefined;
   }) => React.ReactElement;
 }) {
   // Define the component state.
   const [hasImpressionRecorded, setImpressionRecorded] = useState(false);
 
   // Get the version ID from query.
-  const { data } = api.test.getVersion.useQuery(undefined, {
+  const { data } = api.test.getInitialData.useQuery(undefined, {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-  const versionId = data?.id;
+  const versionId = data?.versionId;
+  const styles = data?.styles;
 
   // Get the mutation for incrementing the impression count.
   const incrementImpressionMutation = api.test.incrementImpressions.useMutation(
@@ -40,5 +42,5 @@ export default function ExperimentWrapper({
       incrementImpression({ versionId });
   }, [versionId, hasImpressionRecorded, incrementImpression]);
 
-  return render({ versionId });
+  return render({ versionId, styles });
 }

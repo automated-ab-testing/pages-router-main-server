@@ -4,8 +4,9 @@ import { sample } from "lodash";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const testRouter = createTRPCRouter({
-  getVersion: publicProcedure.query(async ({ ctx }) => {
-    const randomVersion = await ctx.db.$transaction(async (tx) => {
+  getInitialData: publicProcedure.query(async ({ ctx }) => {
+    const data = await ctx.db.$transaction(async (tx) => {
+      // Get all active tests
       const activeTests = await tx.test.findMany({
         where: {
           isActive: true,
@@ -15,13 +16,12 @@ export const testRouter = createTRPCRouter({
         },
       });
 
+      // Randomly select one test
       const randomTest = sample(activeTests);
 
-      if (!randomTest)
-        return {
-          id: null,
-        };
+      if (!randomTest) return null;
 
+      // Get all versions of the selected test
       const versions = await tx.version.findMany({
         where: {
           testId: randomTest.id,
@@ -31,69 +31,49 @@ export const testRouter = createTRPCRouter({
         },
       });
 
+      // Randomly select one version
       // NOTE: Distribusi peluang dapat diubah dengan menggunakan HMM
       const randomVersion = sample(versions);
 
-      if (!randomVersion)
-        return {
-          id: null,
-        };
+      if (!randomVersion) return null;
 
-      return randomVersion;
-    });
-
-    return randomVersion;
-  }),
-
-  getComponentStyles: publicProcedure
-    .input(
-      z.object({
-        versionId: z.string().uuid().nullable().optional(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { versionId } = input;
-
-      // If versionId is not provided or null, return empty styles
-      if (versionId === undefined || versionId === null)
-        return { styles: {} as Record<string, string> };
-
-      const pivot = await ctx.db.$transaction(async (tx) => {
-        // Get all styles of the selected version
-        const styles = await tx.style.findMany({
-          where: {
-            versionId,
-          },
-          select: {
-            className: true,
-            component: {
-              select: {
-                domId: true,
-              },
+      // Get all styles of the selected version
+      const styles = await tx.style.findMany({
+        where: {
+          versionId: randomVersion.id,
+        },
+        select: {
+          className: true,
+          component: {
+            select: {
+              domId: true,
             },
           },
-        });
-
-        // Pivot the styles
-        const pivot = styles.reduce(
-          (acc, curr) => {
-            const { component, className } = curr;
-            const { domId } = component;
-
-            acc[domId] = className;
-
-            return acc;
-          },
-          {} as Record<string, string>,
-        );
-
-        return pivot;
+        },
       });
 
+      // Pivot the styles
+      const pivot = styles.reduce(
+        (acc, curr) => {
+          const { component, className } = curr;
+          const { domId } = component;
+
+          acc[domId] = className;
+
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+
+      // Return all data
       return {
+        versionId: randomVersion.id,
         styles: pivot,
       };
-    }),
+    });
+
+    return data;
+  }),
 
   incrementImpressions: publicProcedure
     .input(
