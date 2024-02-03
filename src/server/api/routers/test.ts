@@ -5,38 +5,42 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const testRouter = createTRPCRouter({
   getVersion: publicProcedure.query(async ({ ctx }) => {
-    const activeTests = await ctx.db.test.findMany({
-      where: {
-        isActive: true,
-      },
-      select: {
-        id: true,
-      },
+    const randomVersion = await ctx.db.$transaction(async (tx) => {
+      const activeTests = await tx.test.findMany({
+        where: {
+          isActive: true,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const randomTest = sample(activeTests);
+
+      if (!randomTest)
+        return {
+          id: null,
+        };
+
+      const versions = await tx.version.findMany({
+        where: {
+          testId: randomTest.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      // NOTE: Distribusi peluang dapat diubah dengan menggunakan HMM
+      const randomVersion = sample(versions);
+
+      if (!randomVersion)
+        return {
+          id: null,
+        };
+
+      return randomVersion;
     });
-
-    const randomTest = sample(activeTests);
-
-    if (!randomTest)
-      return {
-        id: null,
-      };
-
-    const versions = await ctx.db.version.findMany({
-      where: {
-        testId: randomTest.id,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    // NOTE: Distribusi peluang dapat diubah dengan menggunakan HMM
-    const randomVersion = sample(versions);
-
-    if (!randomVersion)
-      return {
-        id: null,
-      };
 
     return randomVersion;
   }),
@@ -44,50 +48,51 @@ export const testRouter = createTRPCRouter({
   getComponentStyles: publicProcedure
     .input(
       z.object({
-        componentDomId: z.string(),
-        versionId: z.string().uuid().nullable(),
+        versionId: z.string().uuid().nullable().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { componentDomId, versionId } = input;
+      const { versionId } = input;
 
-      if (!versionId)
-        return {
-          className: null,
-        };
+      // If versionId is not provided or null, return empty styles
+      if (versionId === undefined || versionId === null)
+        return { styles: {} as Record<string, string> };
 
-      const component = await ctx.db.component.findUnique({
-        where: {
-          domId: componentDomId,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      if (!component)
-        return {
-          className: null,
-        };
-
-      const style = await ctx.db.style.findUnique({
-        where: {
-          componentId_versionId: {
-            componentId: component.id,
+      const pivot = await ctx.db.$transaction(async (tx) => {
+        // Get all styles of the selected version
+        const styles = await tx.style.findMany({
+          where: {
             versionId,
           },
-        },
-        select: {
-          className: true,
-        },
+          select: {
+            className: true,
+            component: {
+              select: {
+                domId: true,
+              },
+            },
+          },
+        });
+
+        // Pivot the styles
+        const pivot = styles.reduce(
+          (acc, curr) => {
+            const { component, className } = curr;
+            const { domId } = component;
+
+            acc[domId] = className;
+
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
+
+        return pivot;
       });
 
-      if (!style)
-        return {
-          className: null,
-        };
-
-      return style;
+      return {
+        styles: pivot,
+      };
     }),
 
   incrementImpressions: publicProcedure

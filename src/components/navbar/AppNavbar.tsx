@@ -5,8 +5,8 @@ import {
   NavbarItem,
 } from "@nextui-org/react";
 
-import SignInButton from "~/components/SignInButton";
-import ThemeSwitcher from "~/components/ThemeSwitcher";
+import SignInButton from "~/components/navbar/SignInButton";
+import ThemeSwitcher from "~/components/navbar/ThemeSwitcher";
 
 export default function AppNavbar() {
   return (

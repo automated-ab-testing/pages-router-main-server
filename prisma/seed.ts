@@ -46,20 +46,29 @@ async function main() {
       },
     });
 
-    const firstStyle = await tx.style.create({
-      data: {
-        className: "bg-purple-500",
-        versionId: firstVersion.id,
-        componentId: firstComponent.id,
-      },
-    });
-
-    const secondStyle = await tx.style.create({
-      data: {
-        className: "bg-red-500",
-        versionId: secondVersion.id,
-        componentId: secondComponent.id,
-      },
+    const styles = await tx.style.createMany({
+      data: [
+        {
+          className: "bg-purple-500",
+          versionId: firstVersion.id,
+          componentId: firstComponent.id,
+        },
+        {
+          className: "hidden",
+          versionId: firstVersion.id,
+          componentId: secondComponent.id,
+        },
+        {
+          className: "bg-red-500",
+          versionId: secondVersion.id,
+          componentId: secondComponent.id,
+        },
+        {
+          className: "hidden",
+          versionId: secondVersion.id,
+          componentId: firstComponent.id,
+        },
+      ],
     });
 
     return {
@@ -67,7 +76,7 @@ async function main() {
       test,
       versions: [firstVersion, secondVersion],
       components: [firstComponent, secondComponent],
-      styles: [firstStyle, secondStyle],
+      styles,
     };
   });
 

@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const AppNavbar = dynamic(() => import("~/components/AppNavbar"), {
+const AppNavbar = dynamic(() => import("~/components/navbar/AppNavbar"), {
   ssr: false,
 });
 

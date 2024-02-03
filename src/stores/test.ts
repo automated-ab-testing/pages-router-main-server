@@ -1,7 +1,7 @@
 import { createStore } from "zustand";
 
 export interface TestState {
-  versionId: string | null;
+  versionId: string | null | undefined;
   hasImpressionRecorded: boolean;
   hasClickRecorded: boolean;
 }
@@ -14,7 +14,7 @@ export interface TestAction {
 
 export function createTestStore() {
   return createStore<TestState & TestAction>()((set) => ({
-    versionId: null,
+    versionId: undefined,
     hasImpressionRecorded: false,
     hasClickRecorded: false,
     setVersionId: (versionId: string | null) => set({ versionId }),
