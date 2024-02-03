@@ -9,30 +9,39 @@ export default function Home() {
   return (
     <Layout title="Automated A/B Testing">
       <main className="flex min-h-screen flex-col items-center justify-center gap-8 py-2">
-        {/* Display Version ID */}
-        <DisplayVersion />
+        {/* A/B Testing Experiment */}
+        <ExperimentWrapper
+          render={({ versionId }) => (
+            <>
+              {/* Display Version ID */}
+              <DisplayVersion versionId={versionId} />
 
-        {/* A/B Testing */}
-        <ExperimentWrapper>
-          <ComponentWrapper
-            renderDefault={() => (
-              <Button className="bg-green-500">Default Button</Button>
-            )}
-            renderTest={({ getStyles, emitWin }) => (
-              <>
-                <Button className={getStyles("first-button")} onClick={emitWin}>
-                  First Button
-                </Button>
-                <Button
-                  className={getStyles("second-button")}
-                  onClick={emitWin}
-                >
-                  Second Button
-                </Button>
-              </>
-            )}
-          />
-        </ExperimentWrapper>
+              {/* A/B Testing Component */}
+              <ComponentWrapper
+                versionId={versionId}
+                renderDefault={() => (
+                  <Button className="bg-green-500">Default Button</Button>
+                )}
+                renderTest={({ getStyles, emitWin }) => (
+                  <>
+                    <Button
+                      className={getStyles("first-button")}
+                      onClick={emitWin}
+                    >
+                      First Button
+                    </Button>
+                    <Button
+                      className={getStyles("second-button")}
+                      onClick={emitWin}
+                    >
+                      Second Button
+                    </Button>
+                  </>
+                )}
+              />
+            </>
+          )}
+        />
       </main>
     </Layout>
   );

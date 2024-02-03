@@ -1,10 +1,10 @@
 import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 
-import useTestContext from "~/hooks/useTestContext";
-
-export default function DisplayVersion() {
-  const versionId = useTestContext((state) => state.versionId);
-
+export default function DisplayVersion({
+  versionId,
+}: {
+  versionId: string | null | undefined;
+}) {
   return (
     <Card>
       <CardHeader>

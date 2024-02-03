@@ -1,22 +1,21 @@
+import { useState } from "react";
+
 import { api } from "~/utils/api";
-import useTestContext from "~/hooks/useTestContext";
 
 export default function ComponentWrapper({
+  versionId,
   renderDefault,
   renderTest,
 }: {
+  versionId: string | null | undefined;
   renderDefault: () => React.ReactElement;
   renderTest: (props: {
     getStyles: (domId: string) => string | undefined;
     emitWin: React.MouseEventHandler | undefined;
   }) => React.ReactElement;
 }) {
-  // Get the version ID from the context.
-  const versionId = useTestContext((state) => state.versionId);
-
-  // Get click status from the context.
-  const hasClickRecorded = useTestContext((state) => state.hasClickRecorded);
-  const confirmClick = useTestContext((state) => state.confirmClick);
+  // Define the component state.
+  const [hasClickRecorded, setClickRecorded] = useState(false);
 
   // Get the component styles from query.
   const { data } = api.test.getComponentStyles.useQuery(
@@ -34,7 +33,7 @@ export default function ComponentWrapper({
   const incrementClicksMutation = api.test.incrementClicks.useMutation({
     onSuccess: () => {
       // Confirm that the click has been recorded.
-      confirmClick();
+      setClickRecorded(true);
     },
   });
   const incrementClicks = incrementClicksMutation.mutate;

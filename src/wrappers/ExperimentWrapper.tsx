@@ -1,19 +1,17 @@
-import { useEffect } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 import { api } from "~/utils/api";
-import useTestContext from "~/hooks/useTestContext";
 
 export default function ExperimentWrapper({
-  children,
-}: React.PropsWithChildren) {
-  // Get the function for setting the version ID from the context.
-  const setVersionId = useTestContext((state) => state.setVersionId);
-
-  // Get impression status from the context.
-  const hasImpressionRecorded = useTestContext(
-    (state) => state.hasImpressionRecorded,
-  );
-  const confirmImpression = useTestContext((state) => state.confirmImpression);
+  render,
+}: {
+  render: (props: {
+    versionId: string | null | undefined;
+  }) => React.ReactElement;
+}) {
+  // Define the component state.
+  const [hasImpressionRecorded, setImpressionRecorded] = useState(false);
 
   // Get the version ID from query.
   const { data } = api.test.getVersion.useQuery(undefined, {
@@ -28,16 +26,11 @@ export default function ExperimentWrapper({
     {
       onSuccess: () => {
         // Confirm that the impression has been recorded.
-        confirmImpression();
+        setImpressionRecorded(true);
       },
     },
   );
   const incrementImpression = incrementImpressionMutation.mutate;
-
-  useEffect(() => {
-    // If the version ID has been fetched, then set the version ID.
-    if (versionId !== undefined) setVersionId(versionId);
-  }, [versionId, setVersionId]);
 
   // Increment the impression count after the version ID has been set.
   useEffect(() => {
@@ -47,5 +40,5 @@ export default function ExperimentWrapper({
       incrementImpression({ versionId });
   }, [versionId, hasImpressionRecorded, incrementImpression]);
 
-  return <>{children}</>;
+  return render({ versionId });
 }
