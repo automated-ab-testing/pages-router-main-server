@@ -1,16 +1,12 @@
-import type React from "react";
+import React from "react";
 import { useEffect, useState } from "react";
 
+import TestContext from "~/context/test";
 import { api } from "~/utils/api";
 
 export default function ExperimentWrapper({
-  render,
-}: {
-  render: (props: {
-    versionId: string | null | undefined;
-    styles: Record<string, string> | undefined;
-  }) => React.ReactElement;
-}) {
+  children,
+}: React.PropsWithChildren) {
   // Define the component state.
   const [hasImpressionRecorded, setImpressionRecorded] = useState(false);
 
@@ -42,5 +38,9 @@ export default function ExperimentWrapper({
       incrementImpression({ versionId });
   }, [versionId, hasImpressionRecorded, incrementImpression]);
 
-  return render({ versionId, styles });
+  return (
+    <TestContext.Provider value={{ versionId, styles }}>
+      {children}
+    </TestContext.Provider>
+  );
 }

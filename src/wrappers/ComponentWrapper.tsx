@@ -1,21 +1,21 @@
 import { useState } from "react";
 
+import useTest from "~/hooks/useTest";
 import { api } from "~/utils/api";
 
 export default function ComponentWrapper({
-  versionId,
-  styles,
   renderDefault,
   renderTest,
 }: {
-  versionId: string | null | undefined;
-  styles: Record<string, string> | undefined;
   renderDefault: () => React.ReactElement;
   renderTest: (props: {
     getStyles: (domId: string) => string;
     emitWin: React.MouseEventHandler | undefined;
   }) => React.ReactElement;
 }) {
+  // Get the version ID and styles from context.
+  const { versionId, styles } = useTest();
+
   // Define the component state.
   const [hasClickRecorded, setClickRecorded] = useState(false);
 
