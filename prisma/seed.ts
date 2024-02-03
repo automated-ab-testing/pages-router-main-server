@@ -54,19 +54,9 @@ async function main() {
           componentId: firstComponent.id,
         },
         {
-          className: "hidden",
-          versionId: firstVersion.id,
-          componentId: secondComponent.id,
-        },
-        {
           className: "bg-red-500",
           versionId: secondVersion.id,
           componentId: secondComponent.id,
-        },
-        {
-          className: "hidden",
-          versionId: secondVersion.id,
-          componentId: firstComponent.id,
         },
       ],
     });

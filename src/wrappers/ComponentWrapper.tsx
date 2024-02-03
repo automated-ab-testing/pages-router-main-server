@@ -12,7 +12,7 @@ export default function ComponentWrapper({
   styles: Record<string, string> | undefined;
   renderDefault: () => React.ReactElement;
   renderTest: (props: {
-    getStyles: (domId: string) => string | undefined;
+    getStyles: (domId: string) => string;
     emitWin: React.MouseEventHandler | undefined;
   }) => React.ReactElement;
 }) {
@@ -43,7 +43,7 @@ export default function ComponentWrapper({
 
   // Else, render the component with the styles.
   return renderTest({
-    getStyles: (domId) => styles[domId],
+    getStyles: (domId) => styles[domId] ?? "hidden",
     emitWin: () => {
       // If the click has not been recorded, then increment the click count.
       if (!hasClickRecorded)
