@@ -18,12 +18,15 @@ export default function Home() {
             renderDefault={() => (
               <Button className="bg-green-500">Default Button</Button>
             )}
-            renderTest={({ styles, emitWin }) => (
+            renderTest={({ getStyles, emitWin }) => (
               <>
-                <Button className={styles["first-button"]} onClick={emitWin}>
+                <Button className={getStyles("first-button")} onClick={emitWin}>
                   First Button
                 </Button>
-                <Button className={styles["second-button"]} onClick={emitWin}>
+                <Button
+                  className={getStyles("second-button")}
+                  onClick={emitWin}
+                >
                   Second Button
                 </Button>
               </>

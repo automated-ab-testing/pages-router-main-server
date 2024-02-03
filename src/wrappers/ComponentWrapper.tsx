@@ -7,8 +7,8 @@ export default function ComponentWrapper({
 }: {
   renderDefault: () => React.ReactElement;
   renderTest: (props: {
-    styles: Record<string, string>;
-    emitWin: React.MouseEventHandler;
+    getStyles: (domId: string) => string | undefined;
+    emitWin: React.MouseEventHandler | undefined;
   }) => React.ReactElement;
 }) {
   // Get the version ID from the context.
@@ -39,16 +39,22 @@ export default function ComponentWrapper({
   });
   const incrementClicks = incrementClicksMutation.mutate;
 
-  // If version ID has not been fetched
-  // or there is no active test,
-  // or the component style has not been fetched,
+  // If there is no active test,
   // then render the default component.
-  if (versionId === undefined || versionId === null || styles === undefined)
-    return renderDefault();
+  if (versionId === null) return renderDefault();
+
+  // If version ID has not been fetched
+  // or the component style has not been fetched,
+  // then render hidden component.
+  if (versionId === undefined || styles === undefined)
+    return renderTest({
+      getStyles: () => "hidden",
+      emitWin: undefined,
+    });
 
   // Else, render the component with the styles.
   return renderTest({
-    styles,
+    getStyles: (domId) => styles[domId],
     emitWin: () => {
       // If the click has not been recorded, then increment the click count.
       if (!hasClickRecorded)
