@@ -28,10 +28,6 @@ export default function ComponentWrapper({
   });
   const incrementClicks = incrementClicksMutation.mutate;
 
-  // If there is no active test,
-  // then render the default component.
-  if (versionId === null) return renderDefault();
-
   // If version ID has not been fetched
   // or the component style has not been fetched,
   // then render hidden component.
@@ -40,6 +36,10 @@ export default function ComponentWrapper({
       getStyles: () => "hidden",
       emitWin: undefined,
     });
+
+  // If there is no active test,
+  // then render the default component.
+  if (versionId === null || styles === null) return renderDefault();
 
   // Else, render the component with the styles.
   return renderTest({

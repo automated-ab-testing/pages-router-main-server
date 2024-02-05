@@ -19,7 +19,11 @@ export const testRouter = createTRPCRouter({
       // Randomly select one test
       const randomTest = sample(activeTests);
 
-      if (!randomTest) return null;
+      if (!randomTest)
+        return {
+          versionId: null,
+          styles: null,
+        };
 
       // Get all versions of the selected test
       const versions = await tx.version.findMany({
@@ -35,7 +39,11 @@ export const testRouter = createTRPCRouter({
       // NOTE: Distribusi peluang dapat diubah dengan menggunakan HMM
       const randomVersion = sample(versions);
 
-      if (!randomVersion) return null;
+      if (!randomVersion)
+        return {
+          versionId: null,
+          styles: null,
+        };
 
       // Get all styles of the selected version
       const styles = await tx.style.findMany({
