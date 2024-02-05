@@ -1,22 +1,12 @@
-import { PrismaClient, UserRole } from "@prisma/client";
-import { hash } from "bcrypt";
+import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
 
 async function main() {
   const result = await db.$transaction(async (tx) => {
-    const user = await tx.user.create({
-      data: {
-        username: "username",
-        passwordHash: await hash("password", 10),
-        role: UserRole.ADMIN,
-      },
-    });
-
     const test = await tx.test.create({
       data: {
         name: "Test Pertama",
-        creatorId: user.id,
       },
     });
 
@@ -62,7 +52,6 @@ async function main() {
     });
 
     return {
-      user,
       test,
       versions: [firstVersion, secondVersion],
       components: [firstComponent, secondComponent],

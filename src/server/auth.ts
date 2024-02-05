@@ -5,10 +5,10 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcrypt";
+import GithubProvider from "next-auth/providers/github";
 
 import { type UserRole } from "@prisma/client";
+import { env } from "~/env";
 import { db } from "~/server/db";
 
 /**
@@ -38,23 +38,13 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  session: {
-    strategy: "jwt",
-  },
   callbacks: {
-    jwt: ({ token, user }) => {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-      }
-      return token;
-    },
-    session: ({ session, token }) => ({
+    session: ({ session, user }) => ({
       ...session,
       user: {
         ...session.user,
-        id: token.id,
-        role: token.role,
+        id: user.id,
+        role: user.role,
       },
     }),
   },
@@ -69,43 +59,9 @@ export const authOptions: NextAuthOptions = {
      *
      * @see https://next-auth.js.org/providers/github
      */
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        // Add logic here to look up the user from the credentials supplied
-        // You can also use the `req` object to access additional parameters
-        // return { id: 1, name: "J Smith", email: "jsmith@example" };
-
-        if (!credentials) throw new Error("AccessDenied");
-
-        const { username, password } = credentials;
-
-        const user = await db.user.findUnique({
-          where: {
-            username,
-          },
-          select: {
-            id: true,
-            role: true,
-            passwordHash: true,
-          },
-        });
-
-        if (!user) throw new Error("AccessDenied");
-
-        const passwordMatch = await compare(password, user.passwordHash);
-
-        if (!passwordMatch) throw new Error("AccessDenied");
-
-        return {
-          id: user.id,
-          role: user.role,
-        };
-      },
+    GithubProvider({
+      clientId: env.GITHUB_ID,
+      clientSecret: env.GITHUB_SECRET,
     }),
   ],
 };
