@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { sample } from "lodash";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const testRouter = createTRPCRouter({
-  getInitialData: publicProcedure.query(async ({ ctx }) => {
+  getInitialData: protectedProcedure.query(async ({ ctx }) => {
     const data = await ctx.db.$transaction(async (tx) => {
       // Get all active tests
       const activeTests = await tx.test.findMany({
@@ -83,7 +83,7 @@ export const testRouter = createTRPCRouter({
     return data;
   }),
 
-  incrementImpressions: publicProcedure
+  incrementImpressions: protectedProcedure
     .input(
       z.object({
         versionId: z.string().uuid(),
@@ -104,7 +104,7 @@ export const testRouter = createTRPCRouter({
       });
     }),
 
-  incrementClicks: publicProcedure
+  incrementClicks: protectedProcedure
     .input(
       z.object({
         versionId: z.string().uuid(),
