@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { sample } from "lodash";
+import { EventType } from "@prisma/client";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
@@ -22,7 +23,7 @@ export const testRouter = createTRPCRouter({
       if (!randomTest)
         return {
           versionId: null,
-          styles: null,
+          featureFlags: {} as Record<string, boolean>,
         };
 
       // Get all versions of the selected test
@@ -42,16 +43,16 @@ export const testRouter = createTRPCRouter({
       if (!randomVersion)
         return {
           versionId: null,
-          styles: null,
+          featureFlags: {} as Record<string, boolean>,
         };
 
-      // Get all styles of the selected version
-      const styles = await tx.style.findMany({
+      // Get all feature flags of the selected version
+      const featureFlags = await tx.featureFlag.findMany({
         where: {
           versionId: randomVersion.id,
         },
         select: {
-          className: true,
+          isActive: true,
           component: {
             select: {
               domId: true,
@@ -60,23 +61,23 @@ export const testRouter = createTRPCRouter({
         },
       });
 
-      // Pivot the styles
-      const pivot = styles.reduce(
+      // Pivot the feature flags
+      const pivot = featureFlags.reduce(
         (acc, curr) => {
-          const { component, className } = curr;
+          const { component, isActive } = curr;
           const { domId } = component;
 
-          acc[domId] = className;
+          acc[domId] = isActive;
 
           return acc;
         },
-        {} as Record<string, string>,
+        {} as Record<string, boolean>,
       );
 
       // Return all data
       return {
         versionId: randomVersion.id,
-        styles: pivot,
+        featureFlags: pivot,
       };
     });
 
@@ -92,15 +93,26 @@ export const testRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { versionId } = input;
 
-      await ctx.db.version.update({
-        where: {
-          id: versionId,
-        },
-        data: {
-          numberOfImpressions: {
-            increment: 1,
+      await ctx.db.$transaction(async (tx) => {
+        const prevEventLog = await tx.eventLog.findUnique({
+          where: {
+            versionId_userId_type: {
+              versionId,
+              userId: ctx.session.user.id,
+              type: EventType.IMPRESSION,
+            },
           },
-        },
+        });
+
+        if (!!prevEventLog) return;
+
+        await tx.eventLog.create({
+          data: {
+            versionId,
+            userId: ctx.session.user.id,
+            type: EventType.IMPRESSION,
+          },
+        });
       });
     }),
 
@@ -113,15 +125,26 @@ export const testRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { versionId } = input;
 
-      await ctx.db.version.update({
-        where: {
-          id: versionId,
-        },
-        data: {
-          numberOfClicks: {
-            increment: 1,
+      await ctx.db.$transaction(async (tx) => {
+        const prevEventLog = await tx.eventLog.findUnique({
+          where: {
+            versionId_userId_type: {
+              versionId,
+              userId: ctx.session.user.id,
+              type: EventType.CLICK,
+            },
           },
-        },
+        });
+
+        if (!!prevEventLog) return;
+
+        await tx.eventLog.create({
+          data: {
+            versionId,
+            userId: ctx.session.user.id,
+            type: EventType.CLICK,
+          },
+        });
       });
     }),
 });

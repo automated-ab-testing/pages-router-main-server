@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import useTest from "~/hooks/useTest";
 import { api } from "~/utils/api";
 
@@ -9,47 +7,37 @@ export default function ComponentWrapper({
 }: {
   renderDefault: () => React.ReactElement;
   renderTest: (props: {
-    getStyles: (domId: string) => string;
+    getDisplayStatus: (domId: string) => boolean;
     emitWin: React.MouseEventHandler | undefined;
   }) => React.ReactElement;
 }) {
   // Get the version ID and styles from context.
-  const { versionId, styles } = useTest();
-
-  // Define the component state.
-  const [hasClickRecorded, setClickRecorded] = useState(false);
+  const data = useTest();
 
   // Get the mutation for incrementing the click count.
-  const incrementClicksMutation = api.test.incrementClicks.useMutation({
-    onSuccess: () => {
-      // Confirm that the click has been recorded.
-      setClickRecorded(true);
-    },
-  });
+  const incrementClicksMutation = api.test.incrementClicks.useMutation();
   const incrementClicks = incrementClicksMutation.mutate;
 
   // If version ID has not been fetched
   // or the component style has not been fetched,
   // then render hidden component.
-  if (versionId === undefined || styles === undefined)
+  if (data === undefined)
     return renderTest({
-      getStyles: () => "hidden",
+      getDisplayStatus: () => false,
       emitWin: undefined,
     });
 
   // If there is no active test,
   // then render the default component.
-  if (versionId === null || styles === null) return renderDefault();
+  if (data.versionId === null) return renderDefault();
 
   // Else, render the component with the styles.
   return renderTest({
-    getStyles: (domId) => styles[domId] ?? "hidden",
+    getDisplayStatus: (domId) => data.featureFlags[domId] ?? false,
     emitWin: () => {
-      // If the click has not been recorded, then increment the click count.
-      if (!hasClickRecorded)
-        incrementClicks({
-          versionId,
-        });
+      incrementClicks({
+        versionId: data.versionId,
+      });
     },
   });
 }

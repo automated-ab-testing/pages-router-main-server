@@ -21,20 +21,18 @@ export default function Home() {
               renderDefault={() => (
                 <Button className="bg-green-500">Default Button</Button>
               )}
-              renderTest={({ getStyles, emitWin }) => (
+              renderTest={({ getDisplayStatus, emitWin }) => (
                 <>
-                  <Button
-                    className={getStyles("first-button")}
-                    onClick={emitWin}
-                  >
-                    First Button
-                  </Button>
-                  <Button
-                    className={getStyles("second-button")}
-                    onClick={emitWin}
-                  >
-                    Second Button
-                  </Button>
+                  {getDisplayStatus("first-button") && (
+                    <Button className="bg-red-500" onClick={emitWin}>
+                      First Button
+                    </Button>
+                  )}
+                  {getDisplayStatus("second-button") && (
+                    <Button className="bg-purple-500" onClick={emitWin}>
+                      Second Button
+                    </Button>
+                  )}
                 </>
               )}
             />

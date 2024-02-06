@@ -36,17 +36,17 @@ async function main() {
       },
     });
 
-    const styles = await tx.style.createMany({
+    const featureFlags = await tx.featureFlag.createMany({
       data: [
         {
-          className: "bg-purple-500",
           versionId: firstVersion.id,
           componentId: firstComponent.id,
+          isActive: true,
         },
         {
-          className: "bg-red-500",
           versionId: secondVersion.id,
           componentId: secondComponent.id,
+          isActive: true,
         },
       ],
     });
@@ -55,7 +55,7 @@ async function main() {
       test,
       versions: [firstVersion, secondVersion],
       components: [firstComponent, secondComponent],
-      styles,
+      featureFlags,
     };
   });
 

@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 import useTest from "~/hooks/useTest";
 
 export default function DisplayVersion() {
-  const { versionId } = useTest();
+  const data = useTest();
 
   return (
     <Card>
@@ -12,9 +12,9 @@ export default function DisplayVersion() {
       </CardHeader>
       <Divider />
       <CardBody>
-        {versionId !== undefined ? (
-          versionId !== null ? (
-            <p>{versionId}</p>
+        {data !== undefined ? (
+          data.versionId !== null ? (
+            <p>{data.versionId}</p>
           ) : (
             <p>There is no active tests at the moment!</p>
           )

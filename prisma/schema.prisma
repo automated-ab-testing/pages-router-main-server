@@ -15,10 +15,15 @@ enum UserRole {
     USER
 }
 
+enum EventType {
+    IMPRESSION
+    CLICK
+}
+
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
+    id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    userId            String  @db.Uuid
     type              String
     provider          String
     providerAccountId String
@@ -35,22 +40,23 @@ model Account {
 }
 
 model Session {
-    id           String   @id @default(cuid())
+    id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     sessionToken String   @unique
-    userId       String
+    userId       String   @db.Uuid
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    role          UserRole  @default(USER)
+    id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    role          UserRole   @default(USER)
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    eventLogs     EventLog[]
 }
 
 model VerificationToken {
@@ -63,55 +69,57 @@ model VerificationToken {
 
 // The main model for the app
 model Test {
-    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    name     String  @unique
-    isActive Boolean @default(false)
-
-    version Version[]
+    id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name      String    @unique
+    isActive  Boolean   @default(false)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @default(now()) @updatedAt
+    versions  Version[]
 }
 
 model Version {
-    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    label               String
-    numberOfImpressions BigInt @default(0)
-    numberOfClicks      BigInt @default(0)
-
-    testId String @db.Uuid
-    test   Test   @relation(fields: [testId], references: [id])
-
-    style Style[]
+    id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    testId       String        @db.Uuid
+    label        String
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @default(now()) @updatedAt
+    test         Test          @relation(fields: [testId], references: [id], onDelete: Cascade)
+    featureFlags FeatureFlag[]
+    eventLogs    EventLog[]
 
     @@unique([testId, label])
 }
 
-model Component {
-    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+model EventLog {
+    id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    versionId String    @db.Uuid
+    userId    String    @db.Uuid
+    type      EventType
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @default(now()) @updatedAt
+    version   Version   @relation(fields: [versionId], references: [id], onDelete: Cascade)
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    domId String @unique
-
-    style Style[]
+    @@unique([versionId, userId, type])
 }
 
-model Style {
-    id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+model Component {
+    id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    domId        String        @unique
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @default(now()) @updatedAt
+    featureFlags FeatureFlag[]
+}
 
-    className String @db.Text
-
+model FeatureFlag {
+    id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     componentId String    @db.Uuid
-    component   Component @relation(fields: [componentId], references: [id])
-
-    versionId String  @db.Uuid
-    version   Version @relation(fields: [versionId], references: [id])
+    versionId   String    @db.Uuid
+    isActive    Boolean   @default(false)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @default(now()) @updatedAt
+    component   Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+    version     Version   @relation(fields: [versionId], references: [id], onDelete: Cascade)
 
     @@unique([componentId, versionId])
 }
