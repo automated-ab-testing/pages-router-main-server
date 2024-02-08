@@ -61,8 +61,8 @@ export default function BarChart() {
     [],
   );
 
-  // If there's no data, return null.
-  if (!analyticsData) return null;
+  // If there's no data, return a message.
+  if (!analyticsData) return <p className="text-lg">Please select a test!</p>;
 
   // Render the chart.
   return (
