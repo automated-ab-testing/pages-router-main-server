@@ -35,12 +35,9 @@ export default function SelectTest() {
           newSearchParams.delete("test");
         }
 
-        // Reset the version label when the test is changed.
-        newSearchParams.delete("version");
-
-        // Replace the URL with the new search params.
+        // Push the URL with the new search params.
         const rawSearchParam = newSearchParams.toString();
-        router.replace(
+        router.push(
           rawSearchParam ? `${pathname}?${rawSearchParam}` : pathname,
         );
       }}

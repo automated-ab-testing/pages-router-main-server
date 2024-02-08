@@ -1,11 +1,8 @@
 import Head from "next/head";
-import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const AppNavbar = dynamic(() => import("~/components/navbar/AppNavbar"), {
-  ssr: false,
-});
+import AppNavbar from "~/components/navbar/AppNavbar";
 
 interface LayoutProps {
   title: string;

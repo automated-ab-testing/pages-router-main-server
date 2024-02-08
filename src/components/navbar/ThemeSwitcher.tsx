@@ -5,14 +5,14 @@ import SunIcon from "~/svg/SunIcon";
 import MoonIcon from "~/svg/MoonIcon";
 
 export default function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
-
-  if (!theme) return null;
+  const { resolvedTheme, setTheme } = useTheme();
 
   return (
     <Switch
-      isSelected={theme === "light"}
-      onValueChange={() => setTheme(theme === "light" ? "dark" : "light")}
+      isSelected={resolvedTheme === "light"}
+      onValueChange={() =>
+        setTheme(resolvedTheme === "light" ? "dark" : "light")
+      }
       color="default"
       size="lg"
       startContent={<SunIcon />}

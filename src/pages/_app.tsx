@@ -18,7 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <NextUIProvider navigate={router.push}>
-        <NextThemesProvider attribute="class" defaultTheme="light">
+        <NextThemesProvider attribute="class">
           <Component {...pageProps} />
         </NextThemesProvider>
       </NextUIProvider>

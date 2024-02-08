@@ -1,33 +1,77 @@
 import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
+import { type AxisOptions, type UserSerie, Chart } from "react-charts";
+import { useTheme } from "next-themes";
 
 import { api } from "~/utils/api";
+
+type MyDatum = { version: string; amount: number };
 
 export default function BarChart() {
   // Get the search params from the URL.
   const searchParams = useSearchParams();
 
   // Get the query from the search params.
-  const versionQuery = searchParams.get("version");
+  const testQuery = searchParams.get("test");
+
+  // Get the theme
+  const { resolvedTheme } = useTheme();
 
   // Fetch the data.
   const { data: analyticsData } = api.analytics.getAnalytics.useQuery(
     {
-      versionId: versionQuery,
+      testId: testQuery,
     },
     {
-      enabled: !!versionQuery,
+      enabled: !!testQuery,
     },
   );
 
-  // TODO: Render the bar chart.
+  // Define the data
+  const data = useMemo(
+    (): UserSerie<MyDatum>[] =>
+      analyticsData
+        ? Object.entries(analyticsData).map(([label, rawData]) => ({
+            label,
+            data: Object.entries(rawData).map(([version, amount]) => ({
+              version,
+              amount,
+            })),
+          }))
+        : [],
+    [analyticsData],
+  );
+
+  // Define the primary axis
+  const primaryAxis = useMemo(
+    (): AxisOptions<MyDatum> => ({
+      getValue: (datum) => datum.version,
+    }),
+    [],
+  );
+
+  // Define the secondary axes
+  const secondaryAxes = useMemo(
+    (): AxisOptions<MyDatum>[] => [
+      {
+        getValue: (datum) => datum.amount,
+        elementType: "bar",
+      },
+    ],
+    [],
+  );
+
+  // TODO: Implement a bar chart
+  if (!analyticsData) return null;
+
   return (
-    <>
-      {analyticsData &&
-        Object.entries(analyticsData).map(([key, value]) => (
-          <p key={key} className="text-base">
-            {key}: {value}
-          </p>
-        ))}
-    </>
+    <Chart
+      options={{
+        data,
+        primaryAxis,
+        secondaryAxes,
+        dark: resolvedTheme === "dark",
+      }}
+    />
   );
 }
