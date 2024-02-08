@@ -61,9 +61,10 @@ export default function BarChart() {
     [],
   );
 
-  // TODO: Implement a bar chart
+  // If there's no data, return null.
   if (!analyticsData) return null;
 
+  // Render the chart.
   return (
     <Chart
       options={{
