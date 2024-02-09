@@ -123,3 +123,7 @@ model FeatureFlag {
 
     @@unique([componentId, versionId])
 }
+
+// TODO:
+// - Ubah EventLog (ubah type menjadi isClicked untuk memudahkan query HMM)
+// - Ubah kardinalitas dari Version ke FeatureFlag menjadi 2:1

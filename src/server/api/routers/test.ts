@@ -1,11 +1,14 @@
 import { z } from "zod";
-import { sample } from "lodash";
+import seedrandom from "seedrandom";
 import { EventType } from "@prisma/client";
 
 import { createTRPCRouter, userProcedure } from "~/server/api/trpc";
 
 export const testRouter = createTRPCRouter({
   getInitialData: userProcedure.query(async ({ ctx }) => {
+    // Define the seed for the random number generator
+    const rng = seedrandom(ctx.session.user.id);
+
     const { versionId, rawFeatureFlags } = await ctx.db.$transaction(
       async (tx) => {
         // Get all active tests
@@ -18,8 +21,21 @@ export const testRouter = createTRPCRouter({
           },
         });
 
-        // Randomly select one test
-        const randomTest = sample(activeTests);
+        // If there are no active tests, return empty data
+        if (activeTests.length === 0)
+          return {
+            versionId: null,
+            rawFeatureFlags: [] as {
+              component: {
+                domId: string;
+              };
+              isActive: boolean;
+            }[],
+          };
+
+        // Randomly select one active test (deterministically using the seed)
+        const randomTestIdx = rng.int32() % activeTests.length;
+        const randomTest = activeTests[randomTestIdx];
 
         if (!randomTest)
           return {
@@ -32,7 +48,7 @@ export const testRouter = createTRPCRouter({
             }[],
           };
 
-        // Get all versions of the selected test
+        // Get all versions in the active test
         const versions = await tx.version.findMany({
           where: {
             testId: randomTest.id,
@@ -42,9 +58,22 @@ export const testRouter = createTRPCRouter({
           },
         });
 
-        // Randomly select one version
+        // If there are no versions in the active test, return empty data
+        if (versions.length === 0)
+          return {
+            versionId: null,
+            rawFeatureFlags: [] as {
+              component: {
+                domId: string;
+              };
+              isActive: boolean;
+            }[],
+          };
+
+        // Randomly select one version in the active test (deterministically using the seed)
         // NOTE: Distribusi peluang dapat diubah dengan menggunakan HMM
-        const randomVersion = sample(versions);
+        const randomVersionIdx = rng.int32() % versions.length;
+        const randomVersion = versions[randomVersionIdx];
 
         if (!randomVersion)
           return {
