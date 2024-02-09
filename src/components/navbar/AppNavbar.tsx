@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import {
   Navbar,
   NavbarBrand,
@@ -5,8 +6,14 @@ import {
   NavbarItem,
 } from "@nextui-org/react";
 
-import ThemeSwitcher from "~/components/navbar/ThemeSwitcher";
 import AccountDropdown from "~/components/navbar/AccountDropdown";
+
+const ThemeSwitcher = dynamic(
+  () => import("~/components/navbar/ThemeSwitcher"),
+  {
+    ssr: false,
+  },
+);
 
 export default function AppNavbar() {
   return (
