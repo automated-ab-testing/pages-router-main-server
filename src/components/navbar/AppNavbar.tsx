@@ -5,8 +5,8 @@ import {
   NavbarItem,
 } from "@nextui-org/react";
 
-import SignInButton from "~/components/navbar/SignInButton";
 import ThemeSwitcher from "~/components/navbar/ThemeSwitcher";
+import AccountDropdown from "~/components/navbar/AccountDropdown";
 
 export default function AppNavbar() {
   return (
@@ -16,10 +16,10 @@ export default function AppNavbar() {
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem>
-          <SignInButton />
+          <ThemeSwitcher />
         </NavbarItem>
         <NavbarItem>
-          <ThemeSwitcher />
+          <AccountDropdown />
         </NavbarItem>
       </NavbarContent>
     </Navbar>
