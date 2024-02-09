@@ -61,8 +61,11 @@ export default function BarChart() {
     [],
   );
 
-  // If there's no data, return a message.
+  // If there's no data yet, return a message.
   if (!analyticsData) return <p className="text-lg">Please select a test!</p>;
+
+  // If the data is empty, return a message.
+  if (data.length === 0) return <p className="text-lg">No data available!</p>;
 
   // Render the chart.
   return (
