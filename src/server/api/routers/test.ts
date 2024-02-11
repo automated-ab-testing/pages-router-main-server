@@ -1,7 +1,5 @@
 import { z } from "zod";
 import seedrandom from "seedrandom";
-import { EventType } from "@prisma/client";
-
 import { createTRPCRouter, userProcedure } from "~/server/api/trpc";
 
 export const testRouter = createTRPCRouter({
@@ -138,63 +136,35 @@ export const testRouter = createTRPCRouter({
       const { versionId } = input;
 
       await ctx.db.$transaction(async (tx) => {
-        // Check if the user has already seen the version
+        // Check if the user has already viewed the component
         const prevEventLog = await tx.eventLog.findUnique({
           where: {
-            versionId_userId_type: {
-              versionId,
-              userId: ctx.session.user.id,
-              type: EventType.IMPRESSION,
-            },
+            userId: ctx.session.user.id,
           },
         });
 
-        // If the user has already seen the version, return
+        // If the user has already viewed the component, return
         if (!!prevEventLog) return;
 
-        // Otherwise, create a new event log
+        // Else, create a new event log
         await tx.eventLog.create({
           data: {
             versionId,
             userId: ctx.session.user.id,
-            type: EventType.IMPRESSION,
           },
         });
       });
     }),
 
-  incrementClicks: userProcedure
-    .input(
-      z.object({
-        versionId: z.string().uuid(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { versionId } = input;
-
-      await ctx.db.$transaction(async (tx) => {
-        // Check if the user has already clicked the version
-        const prevEventLog = await tx.eventLog.findUnique({
-          where: {
-            versionId_userId_type: {
-              versionId,
-              userId: ctx.session.user.id,
-              type: EventType.CLICK,
-            },
-          },
-        });
-
-        // If the user has already clicked the version, return
-        if (!!prevEventLog) return;
-
-        // Otherwise, create a new event log
-        await tx.eventLog.create({
-          data: {
-            versionId,
-            userId: ctx.session.user.id,
-            type: EventType.CLICK,
-          },
-        });
-      });
-    }),
+  incrementClicks: userProcedure.mutation(async ({ ctx }) => {
+    // Update the event log
+    await ctx.db.eventLog.update({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      data: {
+        isClicked: true,
+      },
+    });
+  }),
 });

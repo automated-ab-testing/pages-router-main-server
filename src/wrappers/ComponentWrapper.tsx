@@ -35,9 +35,7 @@ export default function ComponentWrapper({
   return renderTest({
     getDisplayStatus: (domId) => data.featureFlags[domId] ?? false,
     emitWin: () => {
-      incrementClicks({
-        versionId: data.versionId,
-      });
+      incrementClicks();
     },
   });
 }
